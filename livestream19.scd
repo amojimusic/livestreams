@@ -94,7 +94,7 @@ Synth(\add, [\freq, rrand(100, 2000), \r, [0.125, 0.25, 0.5].choose * 0.05, \amp
 
 (~notes = Pbind(
 	\instrument, \synth,
-	\dur, 0.5,
+	\dur, Prand([8, 16, Pseq([0.5, 0.5], 8), Pseq([0.5, 0.5], 16), Pseq([0.5, 0.5], 8)], inf),
 	\freq, Prand(~key, inf) * Prand([1, 0.5, 2, 4], inf),
 	\amp, 0.3,
 	\mul, Pseq([0.1, 0.05, 0.0125, 0.025, 0], inf),
@@ -109,7 +109,7 @@ Synth(\add, [\freq, rrand(100, 2000), \r, [0.125, 0.25, 0.5].choose * 0.05, \amp
 
 (~notes2 = Pbind(
 	\instrument, \synth,
-	\dur, 1/6,
+	\dur, Prand([8, 16, Pseq([1/6], 6*4), Pseq([1/6], 6*4), Pseq([1/6], 6*4)], inf),
 	\freq, Prand(~key, inf) * Prand([1, 0.5, 2, 4], inf),
 	\amp, 0.4,
 	\mul, Pseq([0.1, 0.05, 0.025], inf),
@@ -132,4 +132,4 @@ Synth(\main);
 ~notes.play(t);
 ~notes2.play(t);
 
-s.scope.view.alwaysOnTop_(true);
+s.scope;

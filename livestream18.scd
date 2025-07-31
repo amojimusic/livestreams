@@ -98,11 +98,6 @@
 	Out.ar(\out.kr(0), in);
 }));
 
-~lfo1.set(\freq, 10, \sel, 4);
-
-~lfo1.group_(~lfoGroup);
-
-s.scope;
 
 
 (SynthDef.new(\synth, {
@@ -177,7 +172,7 @@ s.scope;
 
 
 
-
+(
 
 
 ~lfoGroup = Group.new(s, \addToHead);
@@ -250,7 +245,9 @@ t = TempoClock(53.75/60).permanent_(true);
 ~snares.play(t);
 ~snares.play(t);
 
-s.scope.view.alwaysOnTop_(true);
+);
+
+s.scope;
 
 s.plotTree;
 
