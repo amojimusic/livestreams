@@ -19,10 +19,10 @@
 (SynthDef.new(\add, {
 	var env, osc;
 	env = EnvGen.kr(Env.perc(0.01, \dec.kr(0.1), \amp.kr(1), -20), doneAction: 2);
-	osc = Add.ar( \freq.kr(440) + (In.ar(~fmBus, 2).sum * 80) + (env * 100) + Add.ar(\freq.kr * \r.kr(2.5), 1, 3, 5, 3, 7, mul: \mmul.kr(1)), 1, 0.1, 9, 11, 0.1, 0.5, 1, 0.5, 0.12, 0.4, mul: \mul.kr(0.2));
+	osc = Add.ar( \freq.kr(440) + (In.ar(~fmBus, 2).sum * 190) + (env * 100) + Add.ar(\freq.kr * \r.kr(2.5), 1, 3, 5, 3, 7, mul: \mmul.kr(1)), 1, 0.1, 9, 11, 0.1, 0.5, 1, 0.5, 0.12, 0.4, mul: \mul.kr(0.2));
 	osc = osc * env;
 	Out.ar(~fmBus, osc!2);
-	osc = Add.ar( \freq.kr(440) + (In.ar(~fmBus, 2).sum * 80) + (env * 100) + Add.ar(\freq.kr * \r.kr(2.5), 1, 3, 5, 3, 7, mul: \mmul.kr(1)), 1, 0.1, 9, 11, 0.1, 0.5, 1, 0.5, 0.12, 0.4, mul: \mul.kr(0.2));
+	osc = Add.ar( \freq.kr(440) + (In.ar(~fmBus, 2).sum * 100) + (env * 100) + Add.ar(\freq.kr * \r.kr(2.5), 1, 3, 5, 3, 7, mul: \mmul.kr(1)), 1, 0.1, 9, 11, 0.1, 0.5, 1, 0.5, 0.12, 0.4, mul: \mul.kr(0.2));
 	osc = osc.blend(BPF.ar(WhiteNoise.ar, \freq.kr, \q.kr(1)), 0.05);
 	osc = osc * env;
 	osc = Select.ar(\sel.kr(0), [[osc, DelayN.ar(osc, 0.0025, 0.0025)], [DelayN.ar(osc, 0.0025, 0.0025), osc]]);
