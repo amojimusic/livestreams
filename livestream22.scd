@@ -39,7 +39,7 @@
 	sig = sig.blend(SinOsc.ar(freq * 2, 0, \mul.kr), 0.35 + (In.kr(~gremLfo3Bus, 1) * 0.05)) * 0.3;
 	sig = sig * 0.2;
 	sig = [sig, SinOsc.ar(freq, 0, \mul.kr * 0.2)].sum * 0.5;
-	sig = sig * env * 0.8;
+	sig = sig * env * 0.7;
 	sig = RLPF.ar(sig, \lp.kr(1000) + (In.kr(~gremLfo3Bus, 1) * 50), \q.kr(1));
 	sig = Select.ar(\sel.kr(0), [[sig, DelayN.ar(sig, 0.0025, 0.0025)] * 0.5, [DelayN.ar(sig, 0.0025, 0.0025), sig] * 0.5]);
 	sig = Clip.ar(sig * 0.7, -0.3, 0.3);
@@ -53,9 +53,9 @@ Synth(\synth, [\freq, ~key.choose * 2, \amp, 1.4]);
 
 (~pattern = Pbind(
 	\instrument, \synth,
-	\dur, Pseq([Prand([0.5, Pseq([0.25, 0.25], 1)], 1), Prand([0.5, Pseq([0.25, 0.25], 1)], 1), 0.5, 0.5, Prand([1, Pseq([0.5, 0.5], 1), Pseq([0.25, 0.25], 2)], 1)], inf),
+	\dur, Prand([4, 8, 3, Pseq([Prand([0.5, Pseq([0.25, 0.25], 1)], 1), Prand([0.5, Pseq([0.25, 0.25], 1)], 1), 0.5, 0.5, Prand([1, Pseq([0.5, 0.5], 1), Pseq([0.25, 0.25], 2)], 1)], 1)], inf),
 	\freq, Pseq([Prand([~key[0], ~key[1]], 2), Prand([~key[0], ~key[2], ~key[4], ~key[5]], Prand([1, 2, 3], 1)), ~key[2], ~key[0],Prand([~key[1], ~key[2], ~key[3]], 1), ~key[0], Prand(~key, Prand([1, 2, 3], 1)), ~key[2]], inf) * Prand([2, 2, 4, 2, 4, 1, 0.5], inf),
-	\amp, 0.95,
+	\amp, 0.8,
 	\rel, Pwhite(0.7, 3.5, inf),
 	\atk, Pwhite(0.001, 0.025, inf),
 	\mul, Pseq([0.7, 0.65, 0.625], inf),
