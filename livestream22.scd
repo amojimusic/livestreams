@@ -53,7 +53,7 @@ Synth(\synth, [\freq, ~key.choose * 2, \amp, 1.4]);
 
 (~pattern = Pbind(
 	\instrument, \synth,
-	\dur, Prand([4, 8, 3, Pseq([Prand([0.5, Pseq([0.25, 0.25], 1)], 1), Prand([0.5, Pseq([0.25, 0.25], 1)], 1), 0.5, 0.5, Prand([1, Pseq([0.5, 0.5], 1), Pseq([0.25, 0.25], 2)], 1)], 1)], inf),
+	\dur, Pseq([Prand([0.5, Pseq([0.25, 0.25], 1)], 1), Prand([0.5, Pseq([0.25, 0.25], 1)], 1), 0.5, 0.5, Prand([1, Pseq([0.5, 0.5], 1), Pseq([0.25, 0.25], 2)], 1)], inf),
 	\freq, Pseq([Prand([~key[0], ~key[1]], 2), Prand([~key[0], ~key[2], ~key[4], ~key[5]], Prand([1, 2, 3], 1)), ~key[2], ~key[0],Prand([~key[1], ~key[2], ~key[3]], 1), ~key[0], Prand(~key, Prand([1, 2, 3], 1)), ~key[2]], inf) * Prand([2, 2, 4, 2, 4, 1, 0.5], inf),
 	\amp, 0.8,
 	\rel, Pwhite(0.7, 3.5, inf),
@@ -72,8 +72,9 @@ Synth(\synth, [\freq, ~key.choose * 2, \amp, 1.4]);
 }}));
 
 Ndef(\reverb).play;
-Ndef(\reverb).set(\mix, 0.4);
+Ndef(\reverb).set(\mix, 0.3);
 Ndef(\reverb).set(\mul, 1.35);
+Ndef(\reverb).set(\room, 0.5);
 
 ~pattern.play;
 ~scope.play(AppClock);
