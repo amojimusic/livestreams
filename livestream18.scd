@@ -254,6 +254,7 @@ s.scope.view.alwaysOnTop_(true);
 
 s.plotTree;
 
+Synth(\snare);
 
 
 
