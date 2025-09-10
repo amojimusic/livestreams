@@ -2,7 +2,8 @@ Gremlin();
 
 (
 (Ndef(\sine, {
-	var sig, duty, trig, env;
+	var sig, duty, trig, env, sendTrig;
+	sendTrig = Impulse.ar(2);
 	trig = TDuty.ar(Dseq([0.125, 0.125, 0.25, Drand([0.5, Dseq([0.25], 2), Dseq([0.125], 4)], Drand([1, 3, 5], 1)), Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), 0.5, 0.25, 0.25] * \tempoR.kr(1), inf));
 	env = EnvGen.ar(Env.perc(0.04, 0.07), trig);
 	duty = Duty.ar(0.125, 0, Drand([1, 1.125, 1.3, 1.6, 1.9, 1.25, 1.5, 1.75, 1.8275, 1.4, 1.8] * Drand([0.25, 0.5, 1.5, 2.5, 2.25, 2.15, 1, 2, 4, 8, 4.4, 4.5, 3.75], inf) * \freqR.kr(1), inf));
@@ -11,8 +12,10 @@ Gremlin();
 	sig = RLPF.ar(sig, 1000 + (env * 1000));
 	sig = Pan2.ar(sig, \pan.kr(0));
 	sig = Limiter.ar(sig * 0.3, 0.8);
+	SendReply.ar(sendTrig, '/sine', [sig, duty, env]);
 	Out.ar(\out.kr(0), sig);
 	Out.ar(\out2.kr(0), sig);
+
 }));
 
 (Ndef(\sine2, {
@@ -98,23 +101,23 @@ Gremlin();
 
 (Tdef(\gui, {
 	loop{
-		~dMixSlider.valueAction_(rrand(0.6, 1.0));
-		~r1MixSlider.valueAction_(rrand(0.6, 1.0));
-		~r2MixSlider.valueAction_(rrand(0.6, 1.0));
-		~r1MulSlider.valueAction_(rrand(0.65, 1.0));
-		~r2MulSlider.valueAction_(rrand(0.65, 1.0));
-		~dMulSlider.valueAction_(rrand(0.65, 1.0));
+		~dMixSlider.valueAction_(rrand(0.7, 1.0));
+		~r1MixSlider.valueAction_(rrand(0.7, 1.0));
+		~r2MixSlider.valueAction_(rrand(0.7, 1.0));
+		~r1MulSlider.valueAction_(rrand(0.85, 1.0));
+		~r2MulSlider.valueAction_(rrand(0.85, 1.0));
+		~dMulSlider.valueAction_(rrand(0.75, 1.0));
 		~fResSlider.valueAction_(rrand(0.725, 0.975));
-		~fMulSlider.valueAction_(rrand(0.65, 0.975));
-		~r1RoomSlider.valueAction_(rrand(0.2, 1.0));
-		~r2RoomSlider.valueAction_(rrand(0.2, 1.0));
-		~dTimeKnob.valueAction_(rrand(0.2, 1.0));
-		~r1DampSlider.valueAction_(rrand(0.2, 1.0));
-		~r1AmpSlider.valueAction_(rrand(0.2, 1.0));
-		~r1FreqKnob.valueAction_(rrand(0.2, 1.0));
-		~r2DampSlider.valueAction_(rrand(0.2, 1.0));
-		~r2AmpSlider.valueAction_(rrand(0.2, 1.0));
-		~r2FreqKnob.valueAction_(rrand(0.2, 1.0));
+		~fMulSlider.valueAction_(rrand(0.85, 0.975));
+		~r1RoomSlider.valueAction_(rrand(0.3, 1.0));
+		~r2RoomSlider.valueAction_(rrand(0.3, 1.0));
+		~dTimeKnob.valueAction_(rrand(0.3, 1.0));
+		~r1DampSlider.valueAction_(rrand(0.3, 1.0));
+		~r1AmpSlider.valueAction_(rrand(0.3, 1.0));
+		~r1FreqKnob.valueAction_(rrand(0.3, 1.0));
+		~r2DampSlider.valueAction_(rrand(0.3, 1.0));
+		~r2AmpSlider.valueAction_(rrand(0.3, 1.0));
+		~r2FreqKnob.valueAction_(rrand(0.3, 1.0));
 		wait([8, 16, 32].choose);
 }}).clock_(AppClock));
 
@@ -161,24 +164,65 @@ Gremlin();
 
 );
 
-
+Gremlin.new;
 Ndef(\sine).play;
 Ndef(\sine2).play;
 Ndef(\sine3).play;
 Ndef(\sine4).play;
+
+Ndef(\sine).set(\out, 0);
 
 Tdef(\buses).play;
 Tdef(\ratios).play;
 Tdef(\gui).play(AppClock);
 Tdef(\filterSweep).play(AppClock);
 Tdef(\pan).play;
-
+Gremlin.playFx;
 
 s.scope.view.alwaysOnTop_(true);
 
 
+~animation = Window.new("animation", Rect(800, 50, 300, 300)).front.alwaysOnTop_(true);
+~thing = UserView.new(~animation, Rect(0, 0, 3000, 3000));
+
+(OSCdef.new(\sine1Def, {
+	arg msg;
+	msg.postln;
+	{
+		~thing.background_(Color(msg[3] * 0.2, msg[3] * 0.3, (msg[3] * 2) + 0.15, 1));
+
+	~thing.drawFunc_({
 
 
+			Pen.moveTo(((msg[3] * 20) + 25)@100);
+			Pen.lineTo((200 + (msg[3] * 20))@(msg[3]*30 * 2));
+			Pen.width_(msg[3] + 2 * rrand(0.5, 3.0));
+			Pen.strokeColor_(Color(0.2 + (msg[3] * 0.05).abs, 0.1 + (msg[3] * 0.001).abs, (0.2*(msg[3]*rrand(0.01, 1.0))), 1));
+			Pen.lineTo(100@(200 * (msg[3] * 2)));
+		Pen.stroke;
+	});
+		~thing.refresh;
+
+}.defer
+}, '/sine'));
+
+(OSCdef.new(\sine1Def2, {
+	arg msg;
+	{
+		~thing.drawFunc_({
+			Pen.moveTo((msg[3] * 300 + 20 * 50)@(msg[3] * 30 + 10 * 20));
+			Pen.lineTo(200@200);
+			Pen.width_(msg[3] * 20 + 2);
+			Pen.color_(Color(msg[3] + 0.4, msg[3] * 2, msg[3] * 0.5));
+			Pen.stroke;
+
+		});
+		~thing.refresh;
+	}.defer;
+
+}, '/sine_2'));
+
+~thing.animate_(true);
 
 
 
