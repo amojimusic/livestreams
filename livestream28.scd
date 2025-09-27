@@ -1,6 +1,6 @@
 
 ~kick2VerbBus = Bus.audio(s, 2);
-
+~delayBus = Bus.audio(s, 2);
 
 ~tonic = 47;
 ~tuning = [~tonic, ~tonic + 0.7, ~tonic + (0.7 * 2), ~tonic + (0.7 * 3), ~tonic + (0.7 * 4), ~tonic + (0.7 * 5), ~tonic + (0.7 * 6), ~tonic + (0.7 * 7), ~tonic + (0.7 * 8), ~tonic + (0.7 * 9), ~tonic + (0.7 * 10), ~tonic + (0.7 * 11), ~tonic + (0.7 * 12), ~tonic + (0.7 * 13), ~tonic + (0.7 * 14), ~tonic + (0.7 * 15), ~tonic + (0.7 * 16), ~tonic + (0.7 * 17)].midicps;
@@ -20,16 +20,13 @@
 	freq = Duty.ar(0.125, 0, Drand(~key, inf)) * Duty.ar(0.125, 0, Drand([1, 1, 2, 2, 1], inf));
 	env = EnvGen.ar(Env([0, \amp.kr(1), 0], [\atk.kr(0.01), \dec.kr(0.2)]), trig);
 	sig = SinOsc.ar(freq, 0, \mul.kr(1));
-	sig = sig.blend(SinOsc.ar(freq * 1.275), 0.05);
+
 	sig = sig.blend(SinOsc.ar(freq * 1.224), 0.05);
 	sig = sig.blend(SinOsc.ar(freq * 1.498), 0.1);
 	sig = sig.blend(SinOsc.ar(freq * 2), 0.1);
 	sig = sig.blend(SinOsc.ar(freq), 0.1);
 
 	sig = Pan2.ar(sig * env, LFNoise2.ar(1.8, 0.7));
-	sig = sig.blend(DelayN.ar(sig, 0.5, 0.5), 0.1);
-	sig = sig.blend(DelayN.ar(sig, 0.5, 0.5), 0.05);
-	sig = FreeVerb.ar(sig, 0.2, 0.2, 0.2);
 	sig = sig * 0.07;
 
 	sig = Clip.ar(sig, -0.3, 0.3);
@@ -41,28 +38,39 @@
 	sig;
 }));
 
+Ndef(\delay).play;
+Ndef(\delay) <<>.in1 Ndef(\acid);
+Ndef(\delay) <<>.in2 Ndef(\arp);
+Ndef(\delay) <<>.in3 Ndef(\arp2);
+
+(Ndef(\delay, {
+	var in, sig;
+	in = \in1.ar([0, 0]).blend(\in2.ar([0, 0]), 0.6).blend(\in3.ar([0, 0]), 0.25);
+	sig = in;
+	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.15);
+	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.1);
+	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.05);
+	sig = FreeVerb.ar(sig, 0.2, 0.35, 0.4);
+	sig = Clip.ar(sig, -0.4, 0.4) * 1.2;
+}));
+
+
 (Ndef(\arp2, {
 	var sendTrig, trig, freq, env, sig;
 	sendTrig = Impulse.ar(80);
 	trig = TDuty.ar(0.25);
-	freq = Duty.ar(0.25, 0, Drand(~key, inf)) * Duty.ar(0.125, 0, Drand([4, 8], inf));
+	freq = Duty.ar(0.25, 0, Drand(~key, inf)) * Duty.ar(0.25, 0, Drand([4, 8], inf));
 	env = EnvGen.ar(Env([0, \amp.kr(1), 0], [\atk.kr(0.01), \dec.kr(0.2)]), trig);
 	sig = SinOsc.ar(freq, 0, \mul.kr(1));
 
 
 
-
-	sig = sig.blend(SinOsc.ar(freq * 1.275), 0.05);
 	sig = sig.blend(SinOsc.ar(freq * 1.224), 0.05);
 	sig = sig.blend(SinOsc.ar(freq * 1.498), 0.1);
-	sig = sig.blend(SinOsc.ar(freq * 2), 0.1);
 	sig = sig.blend(SinOsc.ar(freq), 0.1);
 
 
 	sig = Pan2.ar(sig * env, LFNoise2.ar(2));
-	sig = sig.blend(DelayN.ar(sig, 0.5, 0.5), 0.1);
-	sig = sig.blend(DelayN.ar(sig, 0.5, 0.5), 0.05);
-	sig = FreeVerb.ar(sig, 0.2, 0.2, 0.2);
 	sig = sig * 0.07;
 
 	sig = Clip.ar(sig, -0.3, 0.3);
@@ -78,34 +86,28 @@
 (Ndef(\acid, {
 	var sendTrig, trig, freq, env, sig;
 	sendTrig = Impulse.ar(80);
-	trig = TDuty.ar(Dseq([1, Drand([0.5, Dseq([0.25], 2), Dseq([0.125], 4)], 1), 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, Drand([1, Dseq([0.5], 2), Dseq([0.25], 4), Dseq([0.125], 8)], 1)], inf));
-	freq = Duty.ar(0.25, 0, Drand(~key, inf)) * Duty.ar(0.125, 0, Drand([1, 0.5, 2], inf));
-	env = EnvGen.ar(Env([0, \amp.kr(1), 0], [\atk.kr(0.01), \dec.kr(0.7)]), trig);
+	trig = TDuty.ar(Dseq([Drand([1, Dseq([0.5], 2), Dseq([0.25], 4), Dseq([0.125], 8)], 1), Drand([0.5, Dseq([0.25], 1)], 1), 0.25, 0.25, 0.25, Drand([0.25, Dseq([0.125, 0.125], 1)], 1), 0.25, 0.125, 0.125, 0.25, 0.25, Drand([0.5, Dseq([0.25], 2), Dseq([0.125], 4)], 1)], inf));
+	freq = Duty.ar(Drand([0.25, Dseq([0.125], 2)], inf), 0, Drand(~key, inf)) * Duty.ar(Drand([0.5, 1, 0.25, 0.5], inf));
+	env = EnvGen.ar(Env.perc(\atk.kr(0.01), \dec.kr(0.35), \amp.kr(1), \curve.kr(0)), trig);
+
 	sig = SinOsc.ar(freq, 0, \mul.kr(1));
 
-
-
-	sig = sig.blend(SinOsc.ar(freq * 1.275), 0.05);
 	sig = sig.blend(SinOsc.ar(freq * 1.224), 0.05);
 	sig = sig.blend(SinOsc.ar(freq * 1.498), 0.1);
 	sig = sig.blend(SinOsc.ar(freq * 2), 0.1);
 	sig = sig.blend(SinOsc.ar(freq), 0.1);
-	sig = sig.blend(Saw.ar(freq), 0.275);
+
+	sig = sig.blend(Saw.ar(freq, \mul.kr), 0.3);
 	sig = sig.blend(Saw.ar(freq * 1.498), 0.05);
+	sig = sig.blend(SinOsc.ar(freq, mul: \mul.kr), 0.1);
+	sig = RLPF.ar(sig * env, LFNoise2.ar(0.3, 3300).abs + 300, 0.4 + (LFNoise2.ar(0.1, 0.4).abs)) * 0.7;
 
-	sig = RLPF.ar(sig, 500 + (LFNoise2.ar(LFNoise0.ar, 4000).abs), (LFNoise2.ar(0.2).abs + 0.2).clip2(1));
-	sig = sig.softclip * 0.9;
-	sig = sig.blend(sig.softclip, 0.4);
+	sig = sig.softclip;
+	sig = Pan2.ar(sig, LFNoise2.ar(0.5, 0.5));
 
-
-	sig = Pan2.ar(sig * env, LFNoise2.ar(2, 0.2));
-	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.15);
-	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.1);
-	sig = sig.blend(DelayN.ar(sig, 1, 1), 0.05);
-	sig = FreeVerb.ar(sig, 0.175, 0.3, 0.8);
-	sig = sig * 0.35;
-
+	sig = sig * 0.4;
 	sig = Clip.ar(sig, -0.3, 0.3);
+
 
 	SendReply.ar(sendTrig, '/acidSig', sig);
 	SendReply.ar(sendTrig, '/acidFreq', freq);
@@ -128,17 +130,13 @@
 	var gate, sendTrig, env, sig;
 	gate = TDuty.ar(Drand([Dseq([0.5], 32), Drand([16, Dseq([Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([0.5, Dseq([0.25], 2)], 1), 0.5, 0.5, 0.25, 0.25, 0.25, 0.25], 1), Dseq([Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([0.5, Dseq([0.25], 2)], 1), 0.5, 0.5, 0.25, 0.25, 0.25, 0.25], 1), Dseq([Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([1, Dseq([0.5], 2), Dseq([0.25], 4)], 1), Drand([0.5, Dseq([0.25], 2)], 1), 0.5, 0.5, 0.25, 0.25, 0.25, 0.25], 1), Dseq([0.25, 0.25], 8), Dseq([0.25, 0.25], 8)], 1)], inf)) * 4;
 	SendReply.ar(gate, '/kickGate', 1);
-	sendTrig = Impulse.ar(80);
+	sendTrig = Impulse.ar(40);
 	env = EnvGen.ar(Env.perc(\atk.kr(0.01), \dec.kr(0.03), \amp.kr(1), \curve.kr(0)), gate);
 	sig = SinOsc.ar(10 + (env * 80) + (LocalIn.ar * 200 * env), 0, \mul.kr(1)) * env;
 	sig = Pan2.ar(sig, \pan.kr(0), sig);
-	sig = sig.blend(sig.clip, 0.1);
-	sig = sig.softclip * 0.325;
 	sig = Clip.ar(sig, -0.25, 0.5);
-	sig = (sig * 1.1).blend(FreeVerb.ar(sig, 0.3, 0.01, 0.8), 0.25).softclip;
-	sig = (sig * 1.05).blend(FreeVerb.ar(sig, 0.1, 0.25, 0.8), 0.125);
 	LocalOut.ar(sig.sum);
-	sig = sig * 1.2;
+	sig = sig * 1.25;
 	sig = Clip.ar(sig, -0.3, 0.3);
 	SendReply.ar(sendTrig, '/kickSig', sig);
 	SendReply.ar(sendTrig, '/kickEnv', env);
@@ -179,7 +177,6 @@
 
 	sig = Pan2.ar(sig, \pan.kr(0), sig);
 	sig = sig * env;
-	sig = Select.ar(\sel.kr(0), [sig, FreeVerb.ar(sig.blend(DelayN.ar(sig, 0.025, 0.025), 0.45).blend(DelayN.ar(sig, 0.015, 0.015), 0.25).blend(DelayN.ar(sig, 0.025, 0.025), 0.125).blend(DelayN.ar(sig, 0.015, 0.015), 0.05).blend(DelayN.ar(sig, 0.025, 0.025), 0.025).blend(DelayN.ar(sig, 0.015, 0.015), 0.0125), 0.4, 0.5, 0.5), sig.blend(DelayN.ar(sig, 0.025, 0.025), 0.45).blend(DelayN.ar(sig, 0.015, 0.015), 0.25).blend(DelayN.ar(sig, 0.025, 0.025), 0.125).blend(DelayN.ar(sig, 0.015, 0.015), 0.05).blend(DelayN.ar(sig, 0.025, 0.025), 0.025).blend(DelayN.ar(sig, 0.015, 0.015), 0.0125)]);
 	sig = sig.softclip * 0.46;
 	sig = Clip.ar(sig, -0.2, 0.2);
 	sig = (sig * 0.8).blend(FreeVerb.ar(sig, 0.0015, 0.0001, 0.8), 0.025).softclip;
@@ -205,9 +202,7 @@
 	env = EnvGen.ar(Env.perc(\atk.kr(0.01), \dec.kr(0.05), \amp.kr(1), \curve.kr(0)), doneAction: 2);
 	sig = Pulse.ar(440 + (WhiteNoise.ar(1)), 0.5, \mul.kr(1)).blend(Pulse.ar(447.1 + (WhiteNoise.ar(1)), 0,5, \mul.kr), 0.5);
 	sig = sig.blend(WhiteNoise.ar, 0.115);
-	sig = sig * env * 0.38;
-	sig = FreeVerb.ar(sig.blend(sig.softclip, 0.3), 0.04, 0.00001) * 0.7;
-	sig = sig.blend(FreeVerb.ar(sig, 0.3, 0.4, 0.5), 0.3) * 0.9;
+	sig = sig * env * 0.15;
 	sig = RHPF.ar(sig, \hp.kr(3600));
 	sig = Pan2.ar(sig, \pan.kr(0));
 	sig = Clip.ar(sig, -0.3, 0.3);
@@ -221,11 +216,6 @@
 
 
 
-
-Ndef(\kick).play;
-Ndef(\arp).play;
-Ndef(\arp2).play;
-Ndef(\acid).play;
 Ndef(\kickVerb).play;
 
 (OSCdef(\kickGate, {
@@ -533,7 +523,7 @@ Ndef(\kickVerb).play;
 }, '/arp2Env'));
 
 
-(OSCdef(\aciSig, {
+(OSCdef(\acidSig, {
 	arg msg;
 	if(~acidSig.isNil){
 		~acidSig = 0;
@@ -567,8 +557,7 @@ Ndef(\kickVerb).play;
 
 (
 
-if(~window.notNil){
-	~window.close};
+
 
 ~window = Window("animation", Rect(800, 75, 300, 300)).front.alwaysOnTop_(true);
 ~u = UserView(~window, Rect(0, 0, 300, 300));
@@ -602,7 +591,7 @@ if(~window.notNil){
 });
 
 ~u.animate_(true);
-~u.frameRate_((10));
+~u.frameRate_(10.25);
 ~u.resize_(5);
 
 
