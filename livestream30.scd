@@ -83,9 +83,9 @@
 		\r1, [0.125, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5].choose,
 		\r2, [0.125, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5].choose,
 		\mul, 0.6,
-		\amp, 0.45 * Pwhite(0.7, 0.8, inf),
+		\amp, 0.4 * Pwhite(0.7, 0.8, inf),
 	\pan, Pwhite(-0.4, 0.4, inf),
-	\out, ~reverbBus
+		\out, [~reverbBus, ~reverb2Bus].choose
 	)));
 
 	(Pdef(\arp2, Pbind(
@@ -97,9 +97,9 @@
 		\r1, [0.125, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5].choose,
 		\r2, [0.125, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5].choose,
 		\mul, 0.6  * Pwhite(0.7, 0.8, inf),
-		\amp, 0.45,
+		\amp, 0.4,
 	\pan, Pwhite(-0.4, 0.4, inf),
-	\out, ~reverbBus
+	\out, [~reverbBus, ~reverb2Bus].choose
 	)));
 
 
