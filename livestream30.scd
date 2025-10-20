@@ -4,11 +4,11 @@
 ~reverb2Bus = Bus.audio(s, 2);
 
 (Ndef(\reverb, {
-	FreeVerb.ar(In.ar(~reverbBus, 2), \mix.kr(0.5), \room.kr(0.5), \damp.kr(0.5));
+	Clip.ar(FreeVerb.ar(In.ar(~reverbBus, 2), \mix.kr(0.5), \room.kr(0.5), \damp.kr(0.5)), -0.5, 0.5);
 }));
 
 (Ndef(\reverb2, {
-	FreeVerb.ar(FreeVerb.ar(In.ar(~reverb2Bus, 2), \mix.kr(0.5), \room.kr(0.5), \damp.kr(0.5)), \mix.kr, \room.kr, \damp.kr);
+	Clip.ar(FreeVerb.ar(FreeVerb.ar(In.ar(~reverb2Bus, 2), \mix.kr(0.5), \room.kr(0.5), \damp.kr(0.5)), \mix.kr, \room.kr, \damp.kr), -0.5, 0.5);
 }));
 
 (SynthDef.new(\synth1, {
